@@ -1,10 +1,15 @@
-def((Input, Item, Button, ButtonHollow) => class extends Item {
+def((Checkbox, Input, Item) => class extends Item {
   init() {
+    let { where } = depot;
+    let { key, title, optional } = this;
+    this.title = title;
+    if (optional) {
+      this.checkbox = new Checkbox(this, { checked: key in where }).to(this.label);
+    }
+    this.optional = optional;
     this.input = new Input(this, { onReady: () => this.ready() }).to(this);
-    new Button({ text: depot.getConst('筛选'), onClick: () => this.apply() }).to(this);
     this.element.setAttribute('data-filter-component', this.component);
     this.element.addEventListener('keydown', event => this.keydown(event));
-    if ('title' in this) this.element.setAttribute('data-filter-title', this.title);
   }
   get value() { return this.input.value; }
   set value(value) { this.input.value = value; }
@@ -22,35 +27,14 @@ def((Input, Item, Button, ButtonHollow) => class extends Item {
       this.value = where[key];
     }
     this.defaultValue = this.value;
-    new ButtonHollow({ text: depot.getConst('清除'), onClick: () => this.clear() }).to(this);
   }
-  apply() {
-    let { uParams, where } = depot;
-    let { defaultValue, value, key, squash } = this;
-    if (squash === 'direct') {
-      if (defaultValue) Object.keys(defaultValue).forEach(key => delete where[key]);
-      where[key] = value[''];
-      delete value[''];
-      Object.assign(where, value);
-    } else {
-      where[key] = value;
-    }
-    uParams.where = JSON.stringify(where);
-    location.hash = new UParams(uParams);
+  get template() { 
+    return `
+      <div>
+        <label ref="label">{title}</label>
+      </div> 
+    `; 
   }
-  clear() {
-    let { uParams, where } = depot;
-    let { defaultValue, key, squash } = this;
-    if (squash === 'direct') {
-      delete where[key];
-      Object.keys(defaultValue).forEach(key => delete where[key]);
-    } else {
-      delete where[key];
-    }
-    uParams.where = JSON.stringify(where);
-    location.hash = new UParams(uParams);
-  }
-  get tagName() { return `div`; }
   get styleSheet() {
     return `
       :scope {
@@ -59,17 +43,13 @@ def((Input, Item, Button, ButtonHollow) => class extends Item {
         margin-top: 1em;
         white-space: nowrap;
         line-height: 28px;
-        &::before {
-          content: attr(data-filter-title);
-          display: inline-block;
-          width: 120px;
-        }
         > * {
           display: inline-block;
           vertical-align: top;
         }
-        > button {
-          margin-left: 1em;
+        > input[type=checkbox] {
+          vertical-align: middle;
+          margin-right: 10px;
         }
       }
     `;
