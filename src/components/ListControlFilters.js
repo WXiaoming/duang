@@ -1,30 +1,28 @@
 def((ListControlFiltersItem, Button, ButtonHollow) => {
 
   class ListControlFiltersButtonGroup extends Jinkela {
-    init() {
-      new Button({
-        text: depot.getConst('筛选'),
-        onClick: () => {
-          this.element.dispatchEvent(new CustomEvent('apply', { bubbles: true }));
-        }
-      }).to(this);
-
-      new ButtonHollow({
-        text: depot.getConst('清除'),
-        onClick: () => {
-          this.element.dispatchEvent(new CustomEvent('reset', { bubbles: true }));
-        }
-      }).to(this);
+    get Button() { return Button; }
+    get ButtonHollow() { return ButtonHollow; }
+    apply() {
+      this.element.dispatchEvent(new CustomEvent('apply', { bubbles: true }));
+    }
+    reset() {
+      this.element.dispatchEvent(new CustomEvent('reset', { bubbles: true }));
+    }
+    get template() {
+      return `
+        <div>
+          <jkl-button onclick="{apply}">筛选</jkl-button>
+          <jkl-button-hollow onclick="{reset}">清除</jkl-button-hollow>
+        </div>
+      `;
     }
     get styleSheet() {
       return `
         :scope {
-          > button {
-            margin-top: 1em;
-
-            &:not(:last-child) {
-              margin-right: 1em;
-            }
+          margin-top: 1em;
+          > :first-child {
+            margin-right: 1em;
           }
         }
       `;
@@ -44,27 +42,33 @@ def((ListControlFiltersItem, Button, ButtonHollow) => {
         }
       `;
     }
+    get template() {
+      return `
+        <div on-apply="{apply}" on-reset="{reset}">
+          <meta ref="list" />
+          <jkl-list-control-filters-button-group></jkl-list-control-filters-button-group>
+        </div>
+      `;
+    }
+    get ListControlFiltersButtonGroup() { return ListControlFiltersButtonGroup; }
     init() {
       let { scheme } = depot;
       if (!scheme) return location.hash = '';
       let { filters = [] } = scheme;
-      let list = ListControlFiltersItem.cast(filters).to(this);
-      let $promise = Promise.all(list.map(item => item.$promise));
-      this.list = list;
-      new ListControlFiltersButtonGroup().to(this);
-      this.element.addEventListener('apply', this.apply.bind(this));
-      this.element.addEventListener('reset', this.reset.bind(this));
+      let $promise;
+      if (filters.length) {
+        this.list = ListControlFiltersItem.cast(filters);
+        $promise = Promise.all(this.list.map(item => item.$promise));
+      } else {
+        this.element.style.display = 'none';
+        $promise = Promise.resolve();
+      }
       Object.defineProperty(this, '$promise', { value: $promise, configurable: true });
-      if (!filters.length) this.element.style.display = 'none';
     }
     apply() {
       let { uParams, where } = depot;
-
-      this.list.forEach(({ input, checkbox }) => {
-        let { defaultValue, value, key, squash } = input;
-        let { checked, optional } = checkbox;
-
-        if (!checked && optional) {
+      this.list.forEach(({ optional, checked, defaultValue, value, key, squash }) => {
+        if (optional && !checked) {
           delete where[key];
         } else {
           if (squash === 'direct') {
@@ -76,16 +80,16 @@ def((ListControlFiltersItem, Button, ButtonHollow) => {
             where[key] = value;
           }
         }
-        uParams.where = JSON.stringify(where);
       });
+      uParams.where = JSON.stringify(where);
       location.hash = new UParams(uParams);
     }
     reset() {
       let { uParams } = depot;
-      let { where } = depot.scheme;
-
+      let { where = {} } = depot.scheme;
       uParams.where = JSON.stringify(where);
       location.hash = new UParams(uParams);
     }
   }
+
 });

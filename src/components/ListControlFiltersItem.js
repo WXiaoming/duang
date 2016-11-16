@@ -1,18 +1,9 @@
-def((Checkbox, Input, Item) => class extends Item {
+def((Input, Item) => class extends Item {
   init() {
     let { where } = depot;
     let { key, title, optional } = this;
-    this.title = title;
-    if (optional) {
-      this.checkbox = new Checkbox(this, { checked: key in where }).to(this.label);
-    }
-    this.optional = optional;
     this.input = new Input(this, { onReady: () => this.ready() }).to(this);
-    this.element.setAttribute('data-filter-component', this.component);
-    this.element.addEventListener('keydown', event => this.keydown(event));
   }
-  get value() { return this.input.value; }
-  set value(value) { this.input.value = value; }
   get $promise() { return this.input.$promise; }
   keydown({ keyCode, target }) {
     if (target.tagName !== 'TEXTAREA' && keyCode === 13) this.apply();
@@ -20,6 +11,7 @@ def((Checkbox, Input, Item) => class extends Item {
   ready() {
     let { where } = depot;
     let { key, squash } = this;
+    this.checked = key in where;
     if (!(key in where)) return;
     if (squash === 'direct') {
       this.value = Object.assign({ '': where[key] }, where)
@@ -28,11 +20,18 @@ def((Checkbox, Input, Item) => class extends Item {
     }
     this.defaultValue = this.value;
   }
+  set checked(value) { this.checkbox.checked = value; }
+  get checked() { return this.checkbox.checked; }
+  get value() { return this.input.value; }
+  set value(value) { this.input.value = value; }
   get template() { 
     return `
-      <div>
-        <label ref="label">{title}</label>
-      </div> 
+      <div on-keydown="{keydown}">
+        <label>
+          <span>{title}</span>
+          <input type="checkbox" ref="checkbox" if="{optional}" />
+        </label>
+      </div>
     `; 
   }
   get styleSheet() {
@@ -43,6 +42,9 @@ def((Checkbox, Input, Item) => class extends Item {
         margin-top: 1em;
         white-space: nowrap;
         line-height: 28px;
+        > label {
+          min-width: 100px;
+        }
         > * {
           display: inline-block;
           vertical-align: top;
