@@ -1,0 +1,18 @@
+{
+  "name": "Duang",
+  "home": "/duang/",
+  "description": "基于配置自动生成 CMS",
+  "darkColor": "#A7762A",
+  "normalColor": "#655",
+  "primaryColor": "#483E3D",
+  "logoUrl": "//fuss10.elemecdn.com/c/65/aef8472a3833e05720ab109ed5956jpeg.jpeg",
+  "languages": ["javascript", "json"],
+  "items": [
+    { "text": "简介", "href": "/duang/intro/" },
+    { "text": "部署", "href": "/duang/deploy/" },
+    { "text": "指南", "href": "/duang/getting-start/" },
+    { "text": "API 文档", "href": "/duang/api/" },
+    { "text": "模块", "href": "/duang/module/" },
+    { "text": "组件", "href": "/duang/components/" }
+  ]
+}
