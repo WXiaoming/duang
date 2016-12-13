@@ -6,7 +6,6 @@
   "normalColor": "#655",
   "primaryColor": "#483E3D",
   "logoUrl": "//fuss10.elemecdn.com/c/65/aef8472a3833e05720ab109ed5956jpeg.jpeg",
-  "languages": ["javascript", "json"],
   "items": [
     { "text": "简介", "href": "/duang/intro/" },
     { "text": "部署", "href": "/duang/deploy/" },
