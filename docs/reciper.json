@@ -6,16 +6,11 @@
   "normalColor": "#655",
   "primaryColor": "#483E3D",
   "logoUrl": "//fuss10.elemecdn.com/c/65/aef8472a3833e05720ab109ed5956jpeg.jpeg",
-<<<<<<< 89b3900264592824f1802383cb66e1b104b8a787
-=======
   "languages": ["javascript", "json"],
->>>>>>> update docs
   "items": [
     { "text": "简介", "href": "/duang/intro/" },
-    { "text": "部署", "href": "/duang/deploy/" },
-    { "text": "指南", "href": "/duang/getting-start/" },
-    { "text": "API 文档", "href": "/duang/api/" },
-    { "text": "模块", "href": "/duang/module/" },
-    { "text": "组件", "href": "/duang/components/" }
+    { "text": "API 设计规范", "href": "/duang/api/" },
+    { "text": "配置文档", "href": "/duang/config/" },
+    { "text": "组件文档", "href": "/duang/components/" }
   ]
 }
