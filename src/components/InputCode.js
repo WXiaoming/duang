@@ -26,7 +26,11 @@ def(() => class extends Jinkela {
     setTimeout(() => this.editor.refresh(), 0);
   }
   set config(obj) {
-    this.config = Object.assign({ theme: 'neo', tabSize: 2 }, obj);
+    this.config = Object.assign({ 
+      theme: 'neo', 
+      tabSize: 2,
+      lineNumbers: true
+    }, obj);
   }
   get value() {
     return this.editor.getValue();
