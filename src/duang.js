@@ -44,6 +44,10 @@
     document.head.appendChild(link);
   });
   let dependencies = [
+    [ // Polyfill
+      'https://github.elemecdn.com/jakearchibald/es6-promise/v3.0.2/dist/es6-promise.min.js',
+      'https://github.elemecdn.com/uglifyjs!github/fetch/v0.11.0/fetch.js'
+    ],
     [ // Basic
       'https://npm.elemecdn.com/uglifyjs!jinkela@1.2.18/umd.js',
       'https://github.elemecdn.com/YanagiEiichi/uparams/1.3.0/uparams.min.js',
@@ -79,7 +83,9 @@
     script.addEventListener('load', resolve);
     document.head.appendChild(script);
   });
-  let task = dependencies.reduce((task, group) => {
+  dependencies.reduce((task, group) => {
     return task.then(() => Promise.all(group.map(loadScript)));
-  }, Promise.resolve());
+  }, Promise.resolve()).then(() => {
+    if (/safari/i.test(navigator.userAgent)) window.dispatchEvent(new Event('load'));
+  });
 }
